@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 // Import library
 var ws  = require('ws');
 var net = require('net');
