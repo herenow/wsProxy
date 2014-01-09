@@ -11,6 +11,9 @@
     "url": "https://github.com/herenow/wsProxy/issues"
   },
   "main": "index.js",
+  "bin": {
+    "wsproxy": "./index.js"
+  },
   "dependencies": {
     "ws": "*"
   },
