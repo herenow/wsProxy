@@ -1,12 +1,10 @@
 #!/usr/bin/env node
 
 // Import library
+var args = require('optimist').argv;
 var ws  = require('ws');
 var net = require('net');
 
-
-// Configuration
-var DEFAULT_PORT = 5999;
 
 // List of allowed server ip
 // If empty, will be able to redirect everywhere
@@ -18,8 +16,22 @@ var ALLOWED_IP   = [
 ];
 
 
+//Arguments
+if(args.h || args.help) {
+	console.log('Example usage:');
+	console.log('wsproxy -p 5999');
+	process.exit(0);
+}
+
+// Configuration
+var PORT = args.p || 5999;
+
+
+//Verbose
+console.log('Starting wsProxy server on port %d', PORT);
+
 // Wait for connection
-(new ws.Server({ port: DEFAULT_PORT }))
+(new ws.Server({ port: PORT }))
 .on('connection', function(ws)
 {
 	var _tcp;
