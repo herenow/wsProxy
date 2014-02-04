@@ -6,6 +6,11 @@ var ws  = require('ws');
 var net = require('net');
 
 
+// Console colors
+function GREEN(text) { return "\033[1;32m" + text + "\033[0m"; }
+function WHITE(text) { return "\033[1;37m" + text + "\033[0m"; }
+
+
 // List of allowed server ip
 // If empty, will be able to redirect everywhere
 // Be aware: can be used for DDOS or forge evil request on other host
@@ -28,33 +33,34 @@ var PORT = args.p || 5999;
 
 
 //Verbose
-console.log('Starting wsProxy server on port %d', PORT);
+console.log( GREEN("[Status]") + " Starting wsProxy server on port '%s'", WHITE(PORT));
 
 // Wait for connection
 (new ws.Server({ port: PORT }))
 .on('connection', function(ws)
 {
 	var _tcp;
+	var _from = ws.upgradeReq.connection.remoteAddress;
+	var _to   = ws.upgradeReq.url.substr(1);
 
 
 	/**
 	 * Initialize proxy
 	 */
-	function Init(data)
+	function Init()
 	{
-		var host = data.substr(1);
-		var args = host.split(':');
+		var args = _to.split(':');
 
 		// Reject
-		if (ALLOWED_IP.length && ALLOWED_IP.indexOf(host) < 0) {
-			console.log('not allowed', args[0], args[1]);
-
+		if (ALLOWED_IP.length && ALLOWED_IP.indexOf(_to) < 0) {
+			console.log( WHITE("[Info]") + " Requested connection from '%s' to '%s' [REFUSED].", WHITE(_from), WHITE(_to));
 			ws.send('false');
 			OnClose();
 			return;
 		}
 
 		// Connect to server
+		console.log( WHITE("[Info]") + " Requested connection from '%s' to '%s' [ACCEPTED].", WHITE(_from), WHITE(_to));
 		_tcp = net.connect( args[1], args[0] );
 
 		_tcp.on('data', OnServerData );
@@ -64,7 +70,7 @@ console.log('Starting wsProxy server on port %d', PORT);
 		});
 
 		_tcp.on('connect', function() {
-			console.log('connected to ', args[0], args[1]);
+			console.log( GREEN("[Status]") + " Connection accepted from '%s'.", WHITE(_to));
 			ws.send('true');
 		});
 	}
@@ -75,8 +81,6 @@ console.log('Starting wsProxy server on port %d', PORT);
 	 */
 	function OnClientData(data)
 	{
-		console.log('received data from client');
-
 		if (!_tcp) {
 			// wth ? Not initialized yet ?
 			return;
@@ -96,8 +100,6 @@ console.log('Starting wsProxy server on port %d', PORT);
 	 */
 	function OnServerData(data)
 	{
-		console.log('received data from server');
-
 		ws.send(data, function(error){
 			/*
 			if (error !== null) {
@@ -113,14 +115,16 @@ console.log('Starting wsProxy server on port %d', PORT);
 	 */
 	function OnClose()
 	{
-		console.log('closing connection');
-
 		if (_tcp) {
+			console.log( WHITE("[Info]") + " Connection closed from '%s'.", WHITE(_to));
+
 			_tcp.removeListener('close', OnClose);
 			_tcp.removeListener('error', OnClose);
 			_tcp.removeListener('data',  OnServerData);
 			_tcp.end();
 		}
+
+		console.log( WHITE("[Info]") + " Connection closed from '%s'.", WHITE(_from));
 
 		ws.removeListener('close',   OnClose);
 		ws.removeListener('error',   OnClose);
@@ -136,5 +140,5 @@ console.log('Starting wsProxy server on port %d', PORT);
 
 
 	// Initialize proxy
-	Init(ws.upgradeReq.url);
+	Init();
 });
