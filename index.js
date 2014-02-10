@@ -32,12 +32,35 @@ if(args.h || args.help) {
 var PORT = args.p || 5999;
 
 
-//Verbose
-console.log( GREEN("[Status]") + " Starting wsProxy server on port '%s'", WHITE(PORT));
 
-// Wait for connection
-(new ws.Server({ port: PORT }))
-.on('connection', function(ws)
+/**
+ * Check where the user want to connect to only allow
+ * connection from our filter list (if list not empty).
+ *
+ * @param {ConnectionInfo}
+ * @returns {boolean}
+ */
+function OnRequestConnection( info )
+{
+	var target = info.req.url.substr(1);
+	var from   = info.req.connection.remoteAddress;
+
+	// Reject
+	if (ALLOWED_IP.length && ALLOWED_IP.indexOf(target) < 0) {
+		console.log( WHITE("[Info]") + " Reject requested connection from '%s' to '%s'.", WHITE(from), WHITE(target));
+		return false;
+	}
+
+	return true;
+}
+
+
+
+/**
+ * Once client connected, connect to tne server and
+ * start redirect packets
+ */
+function OnConnection(ws)
 {
 	var _tcp;
 	var _from = ws.upgradeReq.connection.remoteAddress;
@@ -51,14 +74,6 @@ console.log( GREEN("[Status]") + " Starting wsProxy server on port '%s'", WHITE(
 	{
 		var args = _to.split(':');
 
-		// Reject
-		if (ALLOWED_IP.length && ALLOWED_IP.indexOf(_to) < 0) {
-			console.log( WHITE("[Info]") + " Requested connection from '%s' to '%s' [REFUSED].", WHITE(_from), WHITE(_to));
-			ws.send('false');
-			OnClose();
-			return;
-		}
-
 		// Connect to server
 		console.log( WHITE("[Info]") + " Requested connection from '%s' to '%s' [ACCEPTED].", WHITE(_from), WHITE(_to));
 		_tcp = net.connect( args[1], args[0] );
@@ -71,7 +86,6 @@ console.log( GREEN("[Status]") + " Starting wsProxy server on port '%s'", WHITE(
 
 		_tcp.on('connect', function() {
 			console.log( GREEN("[Status]") + " Connection accepted from '%s'.", WHITE(_to));
-			ws.send('true');
 		});
 	}
 
@@ -141,4 +155,21 @@ console.log( GREEN("[Status]") + " Starting wsProxy server on port '%s'", WHITE(
 
 	// Initialize proxy
 	Init();
+}
+
+
+
+/**
+ * Start the WebSocket Proxy
+ */
+var WebSocketServer = new ws.Server({
+	port:           PORT,
+	clientTracking: false,
+	verifyClient:   OnRequestConnection
+}, function(){
+	console.log( GREEN("[Status]") + " Starting wsProxy server on port '%s'", WHITE(PORT));
 });
+
+
+
+WebSocketServer.on('connection', OnConnection);
