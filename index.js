@@ -5,14 +5,8 @@ var args = require('optimist').argv;
 var main = require('./src/main');
 
 
-// List of allowed server ip
-// If empty, will be able to redirect everywhere
-// Be aware: can be used for DDOS or forge evil request on other host
-var ALLOWED_IP   = [
-	//"83.xxx.x.1:6900",
-	//"83.xxx.x.1:5121",
-	//"83.xxx.x.1:6121"
-];
+// Allowed ip:port to proxy
+var ALLOWED_IP   = require('./allowed');
 
 
 // Arguments
