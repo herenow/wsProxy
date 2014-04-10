@@ -17,8 +17,8 @@ Modules.stack = {
 /**
  * Register new module
  */
-Modules.load = function registerModule(path) {
-	var module = require(path);
+Modules.load = function registerModule(folder) {
+	var module = require('./modules/' + folder);
 	
 	for(var method in this.stack) {
 		if(typeof module[method] === 'function') {
@@ -26,12 +26,6 @@ Modules.load = function registerModule(path) {
 		}
 	}
 }
-
-
-/**
- * Load modules
- */
-Modules.load('./modules/allow');
 
 
 /**
