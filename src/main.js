@@ -7,7 +7,6 @@ var Main = module.exports = function Init(config)
 	 * Dependencies
 	 */
 	var cluster = require('cluster');
-	var server  = require('./server');
 	
 	
 	/**
@@ -17,10 +16,17 @@ var Main = module.exports = function Init(config)
 		for(var i = 0; i < config.workers; i++) {
 			forkWorker(config);
 		}
+		
+		return;
 	}
-	else {
-		server(config);
-	}
+
+
+	/**
+	 * Server constructor
+	 */
+	var Server  = require('./server');
+	
+	var server = new Server(config);
 	
 	
 	/**
