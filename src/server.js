@@ -18,12 +18,12 @@ var Server = function Init(config) {
 	var WebSocketServer = new ws.Server({
 		port:           config.port,
 		clientTracking: false,
-		verifyClient:   onRequestConnect
+		verifyClient:   this.verify.bind(this)
 	}, function() {
 		console.log( GREEN("[Status]") + " Starting wsProxy server on port '%s'", WHITE(config.port));
 	});
 	
-	WebSocketServer.on('connection', onConnection);
+	WebSocketServer.on('connection', this.connect.bind(this));
 	
 	return this;
 }
@@ -32,7 +32,7 @@ var Server = function Init(config) {
 /**
  * Before estabilishing a connection
  */
-function onRequestConnect(info, callback) {
+Server.prototype.verify = function onRequestConnect(info, callback) {
 	
 	// Once we get a response from our modules, pass it through
 	modules.method.verify(info, function(res) {
@@ -45,7 +45,7 @@ function onRequestConnect(info, callback) {
 /**
  * Connection passed through verify, lets initiate a proxy
  */
-function onConnection(ws) {
+Server.prototype.connect = function onConnection(ws) {
 	
 	modules.method.connect(ws, function(res) {
 		//All modules have processed the connection, lets start the proxy
