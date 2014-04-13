@@ -3,6 +3,7 @@
  */
 var ws      = require('ws');
 var modules = require('./modules');
+var mes     = require('./message');
 
 
 /**
@@ -20,7 +21,7 @@ var Server = function Init(config) {
 		clientTracking: false,
 		verifyClient:   onRequestConnect
 	}, function() {
-		console.log( GREEN("[Status]") + " Starting wsProxy server on port '%s'", WHITE(config.port));
+		mes.status("Starting wsProxy server on port '%s'", config.port);
 	});
 	
 	WebSocketServer.on('connection', onConnection);
@@ -60,10 +61,3 @@ function onConnection(ws) {
  */
 module.exports = Server;
 
-	
-/**
- * Temporary place for console colors
- */
-function GREEN(text) { return "\033[1;32m" + text + "\033[0m"; }
-function WHITE(text) { return "\033[1;37m" + text + "\033[0m"; }
-function RED(text)   { return "\033[1;31m" + text + "\033[0m"; }

@@ -2,7 +2,7 @@
  * Dependencies
  */
 var net     = require('net');
-
+var mes     = require('./message');
 
 /**
  * Constructor
@@ -23,7 +23,7 @@ var Proxy = function Constructor(ws) {
 	var args = this._to.split(':');
 
 	// Connect to server
-	console.log( WHITE("[Info]") + " Requested connection from '%s' to '%s' [ACCEPTED].", WHITE(this._from), WHITE(this._to));
+	mes.info("Requested connection from '%s' to '%s' [ACCEPTED].", this._from, this._to);
 	this._tcp = net.connect( args[1], args[0] );
 
 	this._tcp.on('data', this.serverData.bind(this) );
@@ -76,7 +76,7 @@ Proxy.prototype.serverData = function OnClientData(data) {
  */
 Proxy.prototype.close = function OnClose() {
 	if (this._tcp) {
-		console.log( WHITE("[Info]") + " Connection closed from '%s'.", WHITE(this._to));
+		mes.info("Connection closed from '%s'.", this._to);
 
 		this._tcp.removeListener('close', this.close.bind(this) );
 		this._tcp.removeListener('error', this.close.bind(this) );
@@ -85,7 +85,7 @@ Proxy.prototype.close = function OnClose() {
 	}
 
 	if (this._ws) {
-		console.log( WHITE("[Info]") + " Connection closed from '%s'.", WHITE(this._from));
+		mes.info("Connection closed from '%s'.", this._from);
 		
 		this._ws.removeListener('close',   this.close.bind(this) );
 		this._ws.removeListener('error',   this.close.bind(this) );
@@ -99,7 +99,7 @@ Proxy.prototype.close = function OnClose() {
  * On server accepts connection
  */
 Proxy.prototype.connectAccept = function OnConnectAccept() {
-	console.log( GREEN("[Status]") + " Connection accepted from '%s'.", WHITE(this._to));
+	mes.status("Connection accepted from '%s'.", this._to);
 }
 
 /**
@@ -107,10 +107,3 @@ Proxy.prototype.connectAccept = function OnConnectAccept() {
  */
 module.exports = Proxy;
 
-
-/**
- * Temporary place for console colors
- */
-function GREEN(text) { return "\033[1;32m" + text + "\033[0m"; }
-function WHITE(text) { return "\033[1;37m" + text + "\033[0m"; }
-function RED(text)   { return "\033[1;31m" + text + "\033[0m"; }

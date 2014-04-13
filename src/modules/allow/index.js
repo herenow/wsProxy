@@ -1,9 +1,5 @@
-/**
- * Temporary place for console colors
- */
-function GREEN(text) { return "\033[1;32m" + text + "\033[0m"; }
-function WHITE(text) { return "\033[1;37m" + text + "\033[0m"; }
-function RED(text)   { return "\033[1;31m" + text + "\033[0m"; }
+// Logs
+var mes = require('../../message');
 
 
 // Allowed IP:HOST to proxy to.
@@ -21,7 +17,7 @@ function checkAllowed(info, next) {
 
 	// Reject
 	if (allowed_ip.length && allowed_ip.indexOf(target) < 0) {
-		console.log( WHITE("[Info]") + " Reject requested connection from '%s' to '%s'.", WHITE(from), WHITE(target));
+		mes.info("Reject requested connection from '%s' to '%s'.", from, target);
 		next(false);
 	}
 
