@@ -21,6 +21,7 @@ Mes.info = function Info()
 	console.log('\x1b[1;37m[%s]:\x1b[0m %s', 'Info', mes);
 }
 
+
 /**
  * Status
  */
@@ -28,8 +29,20 @@ Mes.status = function Status()
 {
 	var mes = format.apply(null, this.wrap(arguments));
 	
-	console.log('\x1b[1;32m[%s]:\x1b[0m %s', 'Info', mes);
+	console.log('\x1b[1;32m[%s]:\x1b[0m %s', 'Status', mes);
 }
+
+
+/**
+ * Error
+ */
+Mes.error = function Error()
+{
+	var mes = format.apply(null, this.wrap(arguments));
+	
+	console.log('\x1b[1;31m[%s]:\x1b[0m %s', 'Error', mes);
+}
+
 
 /**
  * Wrap arguments in a cool white color :)
