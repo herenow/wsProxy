@@ -17,7 +17,7 @@ Usage
 ```
 wsproxy [-p PORT] [-c CLUSTER (# of worker to spawn)]
 ```
-
+* If no port is specified it will try to listen process.env.PORT or port 5999.
 
 Client usage
 ----------

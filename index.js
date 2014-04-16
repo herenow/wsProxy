@@ -22,6 +22,6 @@ modules.load('allow')
 
 // Init
 main({
-	port: args.p || 5999,
+	port: args.p || process.env.PORT || 5999,
 	workers: args.c || 1
 });
