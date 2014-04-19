@@ -45,6 +45,17 @@ Mes.error = function Error()
 
 
 /**
+ * Warning
+ */
+Mes.warn = function Warning()
+{
+	var mes = format.apply(null, this.wrap(arguments));
+	
+	console.log('\x1b[1;33m[%s]:\x1b[0m %s', 'Warn', mes);
+}
+
+
+/**
  * Wrap arguments in a cool white color :)
  */
 Mes.wrap = function Wrap()
