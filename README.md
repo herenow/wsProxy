@@ -1,5 +1,6 @@
 wsProxy
 =======
+[![Build Status](https://travis-ci.org/herenow/wsProxy.svg?branch=master)](https://travis-ci.org/herenow/wsProxy)
 
 This is a websocket to tcp proxy, written in node.js. It is dynamic and will proxy to various tcp servers.
 
