@@ -9,12 +9,12 @@ var modules = require('./src/modules');
 // Arguments
 if(args.h || args.help) {
 	console.log('Example usage:');
-	console.log('wsproxy -p 5999\n');
+	console.log('wsproxy -p 5999');
 	console.log('-p, --port port to run wsProxy on. [Default: 5999]');
 	console.log('-c, --cluster number of worker \"threads\" to spawn, set it to the number of cpu\'s you have. [Default: 1]');
-	console.log('-s, --ssl enable ssl. [Default: false]');
+	console.log('-s, --ssl enable ssl.');
 	console.log('-k, --key path to ssl key file. [Default: ./default.key]');
-	console.log('-c, --cert enable ssl. [Default: ./default.crt]');
+	console.log('-c, --cert path to ssl cert file. [Default: ./default.crt]');
 	process.exit(0);
 }
 
