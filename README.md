@@ -16,9 +16,11 @@ Usage
 ----------
 
 ```
-wsproxy [-p PORT] [-c CLUSTER (# of worker to spawn)]
+wsproxy [-p PORT] [-c CLUSTER_SIZE (# of worker to spawn)] [-s SSL] [-k KEY_FILE] [-c CERT_FILE]
 ```
-* If no port is specified it will try to listen process.env.PORT or port 5999.
+* If no `port` is specified it will default to process.env.PORT or port 5999.
+* Use `wsproxy --help` for a list of available commands.
+
 
 Client usage
 ----------
@@ -37,6 +39,6 @@ This was created for and by the roBrowser project.
 - [herenow](https://github.com/herenow)
 
 
-Thank you 
+Thank you
 ----------
 - Einaros/ws for providing the websocket middleware
