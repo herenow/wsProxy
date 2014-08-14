@@ -50,7 +50,7 @@ Proxy.prototype.clientData = function OnServerData(data) {
 		this._tcp.write(data);
 	}
 	catch(e) {
-		
+
 	}
 }
 
@@ -86,7 +86,7 @@ Proxy.prototype.close = function OnClose() {
 
 	if (this._ws) {
 		mes.info("Connection closed from '%s'.", this._from);
-		
+
 		this._ws.removeListener('close',   this.close.bind(this) );
 		this._ws.removeListener('error',   this.close.bind(this) );
 		this._ws.removeListener('message', this.clientData.bind(this) );
@@ -106,4 +106,3 @@ Proxy.prototype.connectAccept = function OnConnectAccept() {
  * Exports
  */
 module.exports = Proxy;
-
