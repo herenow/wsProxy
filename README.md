@@ -16,7 +16,7 @@ Usage
 ----------
 
 ```
-wsproxy [-p PORT] [-c CLUSTER_SIZE (# of worker to spawn)] [-s ENABLE_SSL] [-k KEY_FILE] [-c CERT_FILE]
+wsproxy [-p PORT] [-t THREADS (# of threads to spawn)] [-s ENABLE_SSL] [-k KEY_FILE] [-c CERT_FILE]
 ```
 * If no `port` is specified it will default to process.env.PORT or port 5999.
 * Use `wsproxy --help` for a list of available commands.
