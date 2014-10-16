@@ -18,7 +18,6 @@ var Proxy = function Constructor(ws) {
 	this._ws.on('close', this.close.bind(this) );
 	this._ws.on('error', this.close.bind(this) );
 
-
 	// Initialize proxy
 	var args = this._to.split(':');
 
@@ -26,12 +25,16 @@ var Proxy = function Constructor(ws) {
 	mes.info("Requested connection from '%s' to '%s' [ACCEPTED].", this._from, this._to);
 	this._tcp = net.connect( args[1], args[0] );
 
+	// Disable nagle algorithm
+	this._tcp.setTimeout(0)
+	this._tcp.setNoDelay(true)
+
 	this._tcp.on('data', this.serverData.bind(this) );
 	this._tcp.on('close', this.close.bind(this) );
 	this._tcp.on('error', function(error) {
 		console.log(error);
 	});
-
+	
 	this._tcp.on('connect', this.connectAccept.bind(this) );
 }
 
