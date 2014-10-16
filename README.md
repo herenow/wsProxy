@@ -32,6 +32,14 @@ ws://websocket.example.com:5999/127.0.0.1:6900
 * We will soon release a version, with better standards for this.
 
 
+Writing Modules for wsProxy Guidelines
+------------
+* Simply require and extend current files from the `/lib` folder, once done, require them on wsProxy `/index.js`.
+* ***BE CAREFUL, MODULES NEED TO BE LIGHTWEIGHT, LIMIT YOURSELF TO SIMPLE I/O OPERATIONS, DON'T BLOCK, AND CREATE LITTLE GARBAGE!'*** 
+* Don't forget that node.js is single threaded, cpu intensive blocks of code will block the entire proxy!
+* Don't create to much garbage, or the garbage collector will also block for extended periods of time, thus creating "lag" for the users.
+
+
 Authors
 ---------
 This was created for and by the roBrowser project.
