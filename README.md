@@ -18,7 +18,20 @@ Usage
 ```
 wsproxy [-p PORT] [-t THREADS (# of threads to spawn)] [-s ENABLE_SSL] [-k KEY_FILE] [-c CERT_FILE]
 ```
-* If no `port` is specified it will default to process.env.PORT or port 5999.
+* `-p` Port to bind wsProxy to
+	* If no `port` is specified it will default to `process.env.PORT` or port 5999.
+* `-a` List of allowed servers to proxy to
+	* By default wsProxy will proxy to any ip:port, this is a major risk, since malicous users may use your
+	wsProxy server for illegal activity, or any other use other then connecting to your athena server.
+	* The list of IP:PORT's should be separate by comma! Ex:
+	```bash
+	wsproxy -a 127.0.0.1:6900,127.0.0.1:6121,127.0.0.1:5121
+	```
+	* Note: Use the same IP's you configured your server address at ROConfig at roBrowser.
+* `-t` Number of cpu cores that wsProxy should use
+* `-s` Enable SSL
+	* `-k` Path to ssl key file
+	* `-c` Path to ssl cert file
 * Use `wsproxy --help` for a list of available commands.
 
 
@@ -29,6 +42,7 @@ When connecting to this websocket you will give it an IP:PORT uri, for example:
 ws://websocket.example.com:5999/127.0.0.1:6900
 ```
 * You can edit allowed.js to only allow proxy to certain IP:PORT
+	* Note: if you pass in the `-a` or `--allow` option when starting the `wsproxy` this file will be ignored.
 * We will soon release a version, with better standards for this.
 
 
