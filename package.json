@@ -1,7 +1,7 @@
 {
   "name": "wsproxy",
   "description": "This is a websocket to tcp proxy, written in node.js. It is dynamic and will proxy to various tcp servers.",
-  "version": "1.2.31",
+  "version": "1.2.32",
   "author": "roBrowser",
   "repository": {
     "type": "git",
