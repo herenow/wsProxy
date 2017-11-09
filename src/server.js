@@ -72,8 +72,9 @@ function onRequestConnect(info, callback) {
 /**
  * Connection passed through verify, lets initiate a proxy
  */
-function onConnection(ws) {
-
+function onConnection(ws, req) {
+	if (ws.upgradeReq === undefined) 
+		ws.upgradeReq = req;
 	modules.method.connect(ws, function(res) {
 		//All modules have processed the connection, lets start the proxy
 		new Proxy(ws);
