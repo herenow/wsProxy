@@ -28,6 +28,14 @@ wsproxy [-p PORT] [-t THREADS (# of threads to spawn)] [-s ENABLE_SSL] [-k KEY_F
 	wsproxy -a 127.0.0.1:6900,127.0.0.1:6121,127.0.0.1:5121
 	```
 	* Note: Use the same IP's you configured your server address at ROConfig at roBrowser.
+* `-r` List of address redirects
+	* Allows redirecting connections from one address to another
+	* The list should be comma-separated with format: source=target
+	* Example:
+	```bash
+	wsproxy -r localhost:6900=login:6900,localhost:6121=char:6121
+	```
+	* This will redirect connections to localhost:6900 to login:6900, and localhost:6121 to char:6121
 * `-t` Number of cpu cores that wsProxy should use
 * `-s` Enable SSL
 	* `-k` Path to ssl key file
