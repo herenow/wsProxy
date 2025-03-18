@@ -1,7 +1,7 @@
 /**
  * Redirect module for mapping proxy targets
  */
-const mes = require('../../../proxy/src/message');
+const mes = require('../../message');
 
 class RedirectModule {
     constructor() {
