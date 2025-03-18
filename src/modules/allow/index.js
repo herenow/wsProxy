@@ -1,6 +1,8 @@
 /**
  * Allow module for controlling access to proxy targets
  */
+const mes = require('../../message');
+
 class AllowModule {
 	constructor() {
 		this.allowedTargets = new Set();
@@ -22,7 +24,7 @@ class AllowModule {
 	verify(info, next) {
 		// Get target from current URL (after potential redirect)
 		const target = info.req.url.substr(1);
-		const originalTarget = info.originalTarget || target;
+		const from = info.req.connection.remoteAddress;
 
 		// Allow all if no restrictions set
 		if (!this.allowedTargets || this.allowedTargets.size === 0) {
@@ -33,7 +35,7 @@ class AllowModule {
 		// Check if target is allowed
 		const allowed = this.allowedTargets.has(target);
 		if (!allowed) {
-			console.log(`[Info]: Reject requested connection to '${originalTarget}' (${target}).`);
+			mes.info("Reject requested connection from '%s' to '%s'.", from, target);
 		}
 		next(allowed);
 	}

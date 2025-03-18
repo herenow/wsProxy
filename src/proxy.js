@@ -12,7 +12,6 @@ class Proxy {
 		this.ws = ws;
 		this.tcp = null;
 		this.target = ws.upgradeReq.url.substr(1);
-		this.originalTarget = ws.upgradeReq.originalTarget || this.target;
 		this.from = ws.upgradeReq.connection.remoteAddress;
 
 		// Bind event handlers
@@ -29,18 +28,15 @@ class Proxy {
 	 */
 	connect() {
 		const [host, port] = this.target.split(':');
-		const targetInfo = this.originalTarget !== this.target ? 
-			`'${this.originalTarget}' (redirected to '${this.target}')` :
-			`'${this.target}'`;
 
-		mes.info("Requested connection from '%s' to %s [ACCEPTED].", this.from, targetInfo);
+		mes.info("Requested connection from '%s' to '%s' [ACCEPTED].", this.from, this.target);
 
 		this.tcp = net.connect({
 			port: parseInt(port, 10),
 			host: host,
 			family: 4  // Force IPv4
 		}, () => {
-			mes.status("Connection accepted from %s.", targetInfo);
+			mes.status("Connection accepted from '%s'.", this.target);
 		});
 		
 		this.tcp.setTimeout(0);
@@ -48,7 +44,7 @@ class Proxy {
 		this.tcp.on('data', this.handleServerData.bind(this));
 		this.tcp.on('close', this.close.bind(this));
 		this.tcp.on('error', error => {
-			mes.error("Connection error to %s: %s", targetInfo, error.message);
+			mes.error("Connection error from '%s': %s", this.target, error.message);
 			this.close();
 		});
 	}
@@ -61,7 +57,7 @@ class Proxy {
 		try {
 			this.tcp.write(data);
 		} catch (e) {
-			mes.error("Error writing to '%s': %s", this.target, e.message);
+			mes.error("Error sending to server '%s': %s", this.target, e.message);
 			this.close();
 		}
 	}
@@ -72,7 +68,7 @@ class Proxy {
 	handleServerData(data) {
 		this.ws.send(data, error => {
 			if (error) {
-				mes.error("Error sending to client: %s", error.message);
+				mes.error("Error sending to client '%s': %s", this.from, error.message);
 				this.close();
 			}
 		});
