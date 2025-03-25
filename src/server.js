@@ -1,88 +1,72 @@
 /**
  * Dependencies
  */
-var http    = require('http');
-var https   = require('https');
-var fs      = require('fs');
-var ws      = require('ws');
-var modules = require('./modules');
-var mes     = require('./message');
-
-
-/**
- * Proxy constructor
- */
-var Proxy = require('./proxy');
-
+const http = require('http');
+const https = require('https');
+const fs = require('fs');
+const WebSocket = require('ws');
+const modules = require('./modules');
+const Proxy = require('./proxy');
+const mes = require('./message');
 
 /**
- * Initiate a server
+ * WebSocket proxy server
  */
-var Server = function Init(config) {
-	var opts = {
-		clientTracking: false,
-		verifyClient:   onRequestConnect
+class Server {
+	constructor(config) {
+		this.config = config;
+		this.init();
 	}
 
-	if(config.ssl) {
-		opts.server = https.createServer({
-			key: fs.readFileSync( config.key ),
-			cert: fs.readFileSync( config.cert ),
-		}, function(req, res) {
-			res.writeHead(200);
-        	res.end("Secure wsProxy running...\n");
-		});
+	init() {
+		const opts = {
+			clientTracking: false,
+			verifyClient: this.verifyClient.bind(this)
+		};
 
-		opts.server.listen(config.port)
+		// Create HTTP(S) server
+		if (this.config.ssl) {
+			opts.server = https.createServer({
+				key: fs.readFileSync(this.config.key),
+				cert: fs.readFileSync(this.config.cert)
+			}, this.handleHttp);
+			mes.status("Starting a secure wsProxy on port %s...", this.config.port);
+		} else {
+			opts.server = http.createServer(this.handleHttp);
+			mes.status("Starting wsProxy on port %s...", this.config.port);
+		}
 
-		mes.status("Starting a secure wsProxy on port %s...", config.port)
+		// Start listening
+		opts.server.listen(this.config.port);
+
+		// Create WebSocket server
+		const wss = new WebSocket.Server(opts);
+		wss.on('connection', this.handleConnection.bind(this));
 	}
-	else {
-		opts.server = http.createServer(function(req, res) {
-			res.writeHead(200);
-			res.end("wsProxy running...\n");
-		});
 
-		opts.server.listen(config.port)
-
-		mes.status("Starting wsProxy on port %s...", config.port)
+	/**
+	 * Handle HTTP requests
+	 */
+	handleHttp(req, res) {
+		res.writeHead(200);
+		res.end("wsProxy running...\n");
 	}
 
-	var WebSocketServer = new ws.Server(opts)
+	/**
+	 * Verify client connection
+	 */
+	async verifyClient(info, callback) {
+		const result = await modules.verify(info);
+		callback(result);
+	}
 
-	WebSocketServer.on('connection', onConnection);
-
-	return this;
-}
-
-
-/**
- * Before estabilishing a connection
- */
-function onRequestConnect(info, callback) {
-
-	// Once we get a response from our modules, pass it through
-	modules.method.verify(info, function(res) {
-		callback(res);
-	})
-
-}
-
-
-/**
- * Connection passed through verify, lets initiate a proxy
- */
-function onConnection(ws) {
-
-	modules.method.connect(ws, function(res) {
-		//All modules have processed the connection, lets start the proxy
+	/**
+	 * Handle new WebSocket connection
+	 */
+	async handleConnection(ws) {
+		await modules.connect(ws);
 		new Proxy(ws);
-	})
-
+	}
 }
 
-
-/**
- * Exports
- */
 module.exports = Server;

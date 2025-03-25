@@ -1,31 +1,44 @@
-// Logs
-var mes = require('../../message');
+/**
+ * Allow module for controlling access to proxy targets
+ */
+const mes = require('../../message');
 
-
-// Allowed IP:HOST to proxy to.
-var allowed_ip = require('../../../allowed');
-
-
-// This method will check if this websocket can proxy to this server
-// next(boolean) will expect a true or false
-//
-// @param {Object}
-// @param {Function} next module to execute from stack
-function checkAllowed(info, next) {
-	var target = info.req.url.substr(1);
-	var from   = info.req.connection.remoteAddress;
-
-	// Reject
-	if (allowed_ip.length && allowed_ip.indexOf(target) < 0) {
-		mes.info("Reject requested connection from '%s' to '%s'.", from, target);
-		next(false);
+class AllowModule {
+	constructor() {
+		this.allowedTargets = new Set();
 	}
 
-	next(true);
+	/**
+	 * Initialize module with config
+	 */
+	init(config) {
+		this.allowedTargets = new Set(); // Ensure we always have a Set
+		if (config && config.allowed) {
+			config.allowed.forEach(target => this.allowedTargets.add(target));
+		}
+	}
+
+	/**
+	 * Verify if target is allowed
+	 */
+	verify(info, next) {
+		// Get target from current URL (after potential redirect)
+		const target = info.req.url.substr(1);
+		const from = info.req.connection.remoteAddress;
+
+		// Allow all if no restrictions set
+		if (!this.allowedTargets || this.allowedTargets.size === 0) {
+			next(true);
+			return;
+		}
+
+		// Check if target is allowed
+		const allowed = this.allowedTargets.has(target);
+		if (!allowed) {
+			mes.info("Reject requested connection from '%s' to '%s'.", from, target);
+		}
+		next(allowed);
+	}
 }
 
-
-// Exports methods
-module.exports = {
-	verify: checkAllowed //module.verify method
-}
+module.exports = new AllowModule();
